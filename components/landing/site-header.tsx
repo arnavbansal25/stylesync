@@ -2,7 +2,10 @@
 
 import Link from "next/link"
 import { ChevronDown, Menu } from "lucide-react"
-import { SiteHeaderAuth } from "@/components/auth/site-header-auth"
+import {
+  SiteHeaderAuth,
+  type SiteHeaderAuthUser,
+} from "@/components/auth/site-header-auth"
 import { SiteLogo } from "@/components/landing/site-logo"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,7 +26,15 @@ import { cn } from "@/lib/utils"
 
 const secondaryNav = navLinks.filter((link) => link.label !== "Home")
 
-export function SiteHeader() {
+type SiteHeaderProps = {
+  initialUser?: SiteHeaderAuthUser | null
+  authPending?: boolean
+}
+
+export function SiteHeader({
+  initialUser = null,
+  authPending = false,
+}: SiteHeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-black/5 bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -70,7 +81,11 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <SiteHeaderAuth className="hidden lg:block" />
+        <SiteHeaderAuth
+          className="hidden lg:block"
+          initialUser={initialUser}
+          pending={authPending}
+        />
 
         <Sheet>
           <SheetTrigger
@@ -111,7 +126,10 @@ export function SiteHeader() {
               ))}
             </div>
             <div className="mt-auto p-4">
-              <SiteHeaderAuth />
+              <SiteHeaderAuth
+                initialUser={initialUser}
+                pending={authPending}
+              />
             </div>
           </SheetContent>
         </Sheet>

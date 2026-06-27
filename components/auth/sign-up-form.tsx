@@ -43,7 +43,7 @@ export function SignUpForm() {
         setStep("verify")
         return
       }
-      router.push("/")
+      router.replace("/")
       router.refresh()
     })
   }
@@ -57,7 +57,7 @@ export function SignUpForm() {
         setError(result.message ?? "Invalid code.")
         return
       }
-      router.push("/")
+      router.replace("/")
       router.refresh()
     })
   }

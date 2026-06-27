@@ -1,5 +1,6 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { createAuthActions } from "@insforge/sdk/ssr"
@@ -31,6 +32,8 @@ export async function signInWithEmail(
     return { ok: false, message: "Sign in failed." }
   }
 
+  revalidatePath("/")
+
   return {
     ok: true,
     user: { id: data.user.id, email: data.user.email ?? null },
@@ -59,6 +62,7 @@ export async function signUpWithEmail(
   }
 
   if (data?.user) {
+    revalidatePath("/")
     return {
       ok: true,
       user: { id: data.user.id, email: data.user.email ?? null },
@@ -83,6 +87,8 @@ export async function verifyEmailCode(
     return { ok: false, message: "Verification failed." }
   }
 
+  revalidatePath("/")
+
   return {
     ok: true,
     user: { id: data.user.id, email: data.user.email ?? null },
@@ -92,6 +98,7 @@ export async function verifyEmailCode(
 export async function signOutAction() {
   const auth = createAuthActions({ cookies: await cookies() })
   await auth.signOut()
+  revalidatePath("/")
   redirect("/")
 }
 

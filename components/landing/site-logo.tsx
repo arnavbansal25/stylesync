@@ -2,10 +2,16 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { brand } from "@/lib/landing"
 
-export function SiteLogo({ className }: { className?: string }) {
+export function SiteLogo({
+  className,
+  href = "/",
+}: {
+  className?: string
+  href?: string
+}) {
   return (
     <Link
-      href="/"
+      href={href}
       className={cn("flex items-center gap-2.5 no-underline", className)}
     >
       <span

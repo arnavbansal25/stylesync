@@ -55,7 +55,7 @@ Keep this section current at the end of every session. Treat it as the index of 
 | `app/layout.tsx` | Root layout (Geist, Inter, Playfair). App metadata for Get Ready AI. |
 | `app/page.tsx` | Route `/` — renders `LandingPage`. |
 | `app/globals.css` | Tailwind v4 + shadcn + brand tokens (`brand-teal`, `brand-gold`, etc.). |
-| `components/landing/` | Reusable marketing sections (header, hero, showcase, footer, …). Barrel: `index.ts`. |
+| `components/landing/` | Reusable marketing sections (header, hero, showcase, footer, …). `site-header-with-auth.tsx` loads session for header CTA. Barrel: `index.ts`. |
 | `lib/landing.ts` | Nav links, showcase data, testimonials, footer columns, brand copy. |
 | `components/ui/` | Generated shadcn primitives. |
 | `lib/utils.ts` | Re-exports `cn` from `cn`. |
@@ -63,6 +63,12 @@ Keep this section current at the end of every session. Treat it as the index of 
 | `hooks/` | `use-mobile.ts`, `use-highlighted-code.ts`. |
 | `app/(auth)/sign-in/page.tsx` | Route `/sign-in` — email/password + Google OAuth. |
 | `app/(auth)/sign-up/page.tsx` | Route `/sign-up` — register, 6-digit email verification, Google OAuth. |
+| `app/studio/layout.tsx` | Shared dashboard shell (sidebar + top bar) for all `/studio/*` routes. |
+| `app/studio/page.tsx` | Route `/studio` — dashboard overview. |
+| `app/studio/ai/*`, `projects`, `templates`, `billing` | Placeholder section pages behind the same layout. |
+| `components/dashboard/` | Sidebar nav, header, user menu/avatar, `DashboardLayout` server wrapper. |
+| `lib/dashboard.ts` | Nav config (AI tool categories, workspace links); placeholder credits constant. |
+| `lib/dashboard-session.ts` | Server helper: auth user + `public.users` profile for dashboard UI. |
 | `app/api/auth/refresh/route.ts` | InsForge SSR session refresh (`createRefreshAuthRouter`). |
 | `app/api/auth/callback/route.ts` | OAuth callback; exchanges `insforge_code` for cookies. |
 | `app/actions/auth.ts` | Server Actions: sign-in, sign-up, verify email, OAuth start, sign-out. |
@@ -76,20 +82,24 @@ Keep this section current at the end of every session. Treat it as the index of 
 | `.insforge/project.json` | Linked CLI project (gitignored). |
 | `.cursor/rules/update-agents-md.mdc` | Always-on rule: keep this briefing updated. |
 
-## Current state (2026-10-20)
+## Current state (2026-10-21)
 
-- **Landing UI:** Mockup-style marketing page at `/` composed from `components/landing/*` (`LandingPage` → header, hero + interactive before/after showcase, feature strip, studio highlights, smart closet grid, blog teaser, testimonials, pricing CTA, footer).
+- **Landing UI:** Mockup-style marketing page at `/` composed from `components/landing/*` (`LandingPage` server-fetches session for header; hero + interactive before/after showcase, feature strip, studio highlights, smart closet grid, blog teaser, testimonials, pricing CTA, footer).
 - **Brand:** Display name **Get Ready AI** (`lib/landing.ts`); Playfair headings, teal/gold CTAs, Unsplash hero/showcase images.
-- **Auth:** InsForge SSR auth via `@insforge/sdk` — `/sign-in`, `/sign-up`, Google OAuth, email/password with 6-digit verification on sign-up. Header shows Log In / Start Free Trial or signed-in email + Sign out.
+- **Auth:** InsForge SSR auth via `@insforge/sdk` — `/sign-in`, `/sign-up`, Google OAuth, email/password with 6-digit verification on sign-up. Header shows Log In / Get Started when signed out, or **Studio** → `/studio` when signed in.
 - **Database:** `public.users` (`id` → `auth.users`) populated on first sign-up by `on_auth_user_created` trigger (`handle_new_user`). RLS: owners can select/update own row.
 - **Env:** `.env.local` with InsForge URL, anon key, `NEXT_PUBLIC_APP_URL=http://localhost:3000`. Backend `allowed_redirect_urls` includes localhost sign-in/sign-up/callback.
-- **Routes:** `/`, `/sign-in`, `/sign-up`, `/api/auth/refresh`, `/api/auth/callback`.
+- **Studio dashboard:** Authenticated `/studio/*` uses shadcn `Sidebar` (brand teal/gold/blush), grouped nav (dashboard options, AI tools, projects/templates/billing), credits + profile in sidebar footer, profile menu in top bar. Credits are a placeholder (`DEFAULT_REMAINING_CREDITS`) until billing schema exists.
+- **Routes:** `/`, `/sign-in`, `/sign-up`, `/studio` (+ `/studio/ai/*`, `/studio/projects`, `/studio/templates`, `/studio/billing`), `/api/auth/refresh`, `/api/auth/callback`.
 
 ## Session log
 
 - **2026-10-19:** Confirmed InsForge link + installed official skills. Added briefing + `.cursor/rules/update-agents-md.mdc`.
 - **2026-10-20:** Built Luminary-style landing with small reusable section components; fixed build (lucide v1.59 has no `Instagram`/`Twitter` icons — use `components/landing/social-icons.tsx`).
 - **2026-10-20:** Added InsForge authentication (SSR cookies, OAuth, email verify), `public.users` migration + trigger, branded auth pages, header auth state.
+- **2026-10-21:** Header swaps Log In / Get Started for Studio when authenticated; added `/studio` shell with auth guard.
+- **2026-10-21:** Landing header auth reads session on the server (`SiteHeaderWithAuth` → `SiteHeader` `initialUser`); signed-in header shows Sign out + Studio (no client `getCurrentUser` overwrite); `revalidatePath("/")` on auth actions.
+- **2026-10-21:** Added studio dashboard layout with sidebar navigation, top header avatar menu, and placeholder routes for AI tools and workspace pages.
 <!-- PROJECT-BRIEFING:END -->
 
 <!-- BEGIN:nextjs-agent-feedback -->

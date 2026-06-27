@@ -1,53 +1,41 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState, useTransition } from "react"
 import { signOutAction } from "@/app/actions/auth"
 import { CtaButton } from "@/components/landing/cta-button"
-import { insforge } from "@/lib/insforge/client"
 
-type AuthUser = { id: string; email: string | null }
+export type SiteHeaderAuthUser = { id: string; email: string | null }
 
-export function SiteHeaderAuth({ className }: { className?: string }) {
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [pending, startTransition] = useTransition()
+type SiteHeaderAuthProps = {
+  className?: string
+  initialUser: SiteHeaderAuthUser | null
+  pending?: boolean
+}
 
-  useEffect(() => {
-    let cancelled = false
-    void (async () => {
-      const { data, error } = await insforge.auth.getCurrentUser()
-      if (cancelled) return
-      setUser(error ? null : (data?.user ?? null))
-      setLoading(false)
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  if (loading) {
+export function SiteHeaderAuth({
+  className,
+  initialUser,
+  pending = false,
+}: SiteHeaderAuthProps) {
+  if (pending) {
     return (
       <div className={className}>
-        <div className="h-10 w-24 animate-pulse rounded-full bg-muted" />
+        <div className="h-10 w-[11.5rem] animate-pulse rounded-full bg-muted" />
       </div>
     )
   }
 
-  if (user) {
+  if (initialUser) {
     return (
       <div className={className}>
         <div className="flex items-center gap-2">
-          <span className="hidden max-w-[140px] truncate text-sm text-muted-foreground sm:inline">
-            {user.email}
-          </span>
-          <CtaButton
-            type="button"
-            tone="ghost"
-            disabled={pending}
-            onClick={() => startTransition(() => signOutAction())}
-          >
-            Sign out
+          <form action={signOutAction}>
+            <CtaButton type="submit" tone="ghost">
+              Sign out
+            </CtaButton>
+          </form>
+          <CtaButton tone="gold" render={<Link href="/studio" />}>
+            Studio
           </CtaButton>
         </div>
       </div>
@@ -61,7 +49,7 @@ export function SiteHeaderAuth({ className }: { className?: string }) {
           Log In
         </CtaButton>
         <CtaButton tone="gold" render={<Link href="/sign-up" />}>
-          Start Free Trial
+          Get Started
         </CtaButton>
       </div>
     </div>

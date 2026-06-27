@@ -36,7 +36,7 @@ export function SignInForm() {
         setError(result.message ?? "Sign in failed.")
         return
       }
-      router.push("/")
+      router.replace("/")
       router.refresh()
     })
   }
