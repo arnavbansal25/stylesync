@@ -1,0 +1,18 @@
+---
+description: Keep AGENTS.md project briefing current so agents skip full-repo scans
+alwaysApply: true
+---
+
+# Update AGENTS.md every session
+
+`AGENTS.md` is the project index. Read **Project briefing** first. Do not scan the whole tree unless the briefing is missing the answer.
+
+After any meaningful change in this session, update `AGENTS.md` before you finish:
+
+- **Current state** — what exists now (routes, schema, env, SDK, backend objects).
+- **Map** — new or moved paths only; drop stale rows.
+- **Session log** — one dated bullet of what changed and why.
+
+Leave the Next.js (`BEGIN:nextjs-agent-rules`) and InsForge (`INSFORGE:START`) blocks untouched.
+
+Backend work uses `npx -y @insforge/cli` and the InsForge skills. Never hardcode keys.
