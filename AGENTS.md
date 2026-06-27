@@ -64,7 +64,9 @@ Keep this section current at the end of every session. Treat it as the index of 
 | `app/(auth)/sign-in/page.tsx` | Route `/sign-in` — email/password + Google OAuth. |
 | `app/(auth)/sign-up/page.tsx` | Route `/sign-up` — register, 6-digit email verification, Google OAuth. |
 | `app/studio/layout.tsx` | Shared dashboard shell (sidebar + top bar) for all `/studio/*` routes. |
-| `app/studio/page.tsx` | Route `/studio` — dashboard overview. |
+| `app/studio/page.tsx` | Route `/studio` — overview banner, AI tool cards grid, recent projects. |
+| `components/dashboard/studio-overview.tsx` | Studio home: banner, tool grid, recent projects section. |
+| `lib/dashboard.ts` | Nav config + `dashboardAiToolCards` (images under `public/ai-photo-editing-images/`). |
 | `app/studio/ai/*`, `projects`, `templates`, `billing` | Placeholder section pages behind the same layout. |
 | `components/dashboard/` | Sidebar nav, header, user menu/avatar, `DashboardLayout` server wrapper. |
 | `lib/dashboard.ts` | Nav config (AI tool categories, workspace links); placeholder credits constant. |
@@ -89,7 +91,7 @@ Keep this section current at the end of every session. Treat it as the index of 
 - **Auth:** InsForge SSR auth via `@insforge/sdk` — `/sign-in`, `/sign-up`, Google OAuth, email/password with 6-digit verification on sign-up. Header shows Log In / Get Started when signed out, or **Studio** → `/studio` when signed in.
 - **Database:** `public.users` (`id` → `auth.users`) populated on first sign-up by `on_auth_user_created` trigger (`handle_new_user`). RLS: owners can select/update own row.
 - **Env:** `.env.local` with InsForge URL, anon key, `NEXT_PUBLIC_APP_URL=http://localhost:3000`. Backend `allowed_redirect_urls` includes localhost sign-in/sign-up/callback.
-- **Studio dashboard:** Authenticated `/studio/*` uses shadcn `Sidebar` (brand teal/gold/blush), grouped nav (dashboard options, AI tools, projects/templates/billing), credits + profile in sidebar footer, profile menu in top bar. Credits are a placeholder (`DEFAULT_REMAINING_CREDITS`) until billing schema exists.
+- **Studio dashboard:** Authenticated `/studio/*` uses shadcn `Sidebar` (brand teal/gold/blush), grouped nav (dashboard options, AI tools, projects/templates/billing), credits + profile in sidebar footer, profile menu in top bar. Credits are a placeholder (`DEFAULT_REMAINING_CREDITS`) until billing schema exists. `/studio` overview shows hero banner, up to 6 AI tool cards (3-column grid, local images), and recent projects empty state until projects schema exists.
 - **Routes:** `/`, `/sign-in`, `/sign-up`, `/studio` (+ `/studio/ai/*`, `/studio/projects`, `/studio/templates`, `/studio/billing`), `/api/auth/refresh`, `/api/auth/callback`.
 
 ## Session log
@@ -100,6 +102,7 @@ Keep this section current at the end of every session. Treat it as the index of 
 - **2026-10-21:** Header swaps Log In / Get Started for Studio when authenticated; added `/studio` shell with auth guard.
 - **2026-10-21:** Landing header auth reads session on the server (`SiteHeaderWithAuth` → `SiteHeader` `initialUser`); signed-in header shows Sign out + Studio (no client `getCurrentUser` overwrite); `revalidatePath("/")` on auth actions.
 - **2026-10-21:** Added studio dashboard layout with sidebar navigation, top header avatar menu, and placeholder routes for AI tools and workspace pages.
+- **2026-10-21:** Implemented `/studio` overview page (banner, AI tool cards from `dashboardAiToolCards`, recent projects placeholder).
 <!-- PROJECT-BRIEFING:END -->
 
 <!-- BEGIN:nextjs-agent-feedback -->

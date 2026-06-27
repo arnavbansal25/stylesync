@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "youcam-beauty": {
+      "url": "https://mcp-api-01.makeupar.com/mcp/beauty",
+      "type": "http",
+      "headers": {
+        "Authorization": "Bearer sk-N86PWIpRUwfXjx2SEsiCkqVuk1nVYYAXBVGYJWyqkh8ChxTVMObBssjTgcsvuXH3"
+      }
+    }
+  }
+}
