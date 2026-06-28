@@ -1,11 +1,11 @@
 "use server"
 
 import { resolveAppUrl } from "@/lib/auth/get-app-url"
+import type { PaidBillingPlanId } from "@/lib/billing-plans"
 import {
   getStripePaymentEnvironment,
   getStripePriceIdForPlan,
-  type PaidBillingPlanId,
-} from "@/lib/billing-plans"
+} from "@/lib/billing-stripe-server"
 import { createInsForgeServerClient } from "@/lib/insforge/server"
 
 export type BillingActionResult =

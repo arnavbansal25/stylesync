@@ -1,0 +1,9 @@
+# https://docs.netlify.com/build/environment-variables/secrets-controller/
+
+[build]
+  command = "npm run build"
+
+[build.environment]
+  # STRIPE_PAYMENT_ENV is test|live (InsForge Stripe mode), not a cryptographic secret.
+  # Stripe Price IDs are public catalog identifiers, not secret keys.
+  SECRETS_SCAN_OMIT_KEYS = "STRIPE_PAYMENT_ENV,STRIPE_PRICE_ID_BASIC,STRIPE_PRICE_ID_PRO"

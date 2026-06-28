@@ -90,7 +90,8 @@ Keep this section current at the end of every session. Treat it as the index of 
 | `lib/studio-projects-data.ts` | Server fetch: merge beauty/fashion/extras rows, newest first, paginate. |
 | `components/dashboard/projects/` | Projects banner, generation cards, pagination. |
 | `app/studio/billing/page.tsx` | Route `/studio/billing` — credits summary, Free/Basic/Pro plans, Stripe Checkout + Billing Portal. |
-| `lib/billing-plans.ts` | Plan catalog, highlights, server mapping to `STRIPE_PRICE_ID_*`. |
+| `lib/billing-plans.ts` | Plan catalog, highlights, client-safe helpers (`BILLING_PLANS`, `getBillingPlan`). |
+| `lib/billing-stripe-server.ts` | Server-only Stripe env: `getStripePaymentEnvironment`, `getStripePriceIdForPlan`. |
 | `app/actions/billing.ts` | Server actions: `startSubscriptionCheckout`, `openBillingPortal` via `@insforge/sdk` payments.stripe. |
 | `components/dashboard/billing/` | `BillingWorkspace` client UI for upgrades and manage billing. |
 | `app/studio/ai/*` (other), `templates` | Placeholder section pages behind the same layout. |
@@ -121,11 +122,14 @@ Keep this section current at the end of every session. Treat it as the index of 
 | `proxy.ts` | `updateSession()` from `@insforge/sdk/ssr/middleware`. |
 | `migrations/` | InsForge SQL migrations (e.g. `public.users` + `auth.users` trigger). |
 | `insforge.toml` | Committed project config (auth redirect URLs incl. Netlify production, etc.). |
-| `.env.local` | `NEXT_PUBLIC_INSFORGE_*`, `NEXT_PUBLIC_APP_URL`, `YOUCAM_API_*`, `STRIPE_PAYMENT_ENV`, `STRIPE_PRICE_ID_BASIC`, `STRIPE_PRICE_ID_PRO` (gitignored; see `.env.example`). |
+| `.env.example` | Committed env template (empty secrets); `.env.local` gitignored. |
+| `netlify.toml` | Netlify build + `SECRETS_SCAN_OMIT_KEYS` for non-cryptographic Stripe config vars. |
+| `.cursor/mcp.json.example` | YouCam MCP template; real `.cursor/mcp.json` gitignored. |
 | `.insforge/project.json` | Linked CLI project (gitignored). |
+| `.env.local` | `NEXT_PUBLIC_INSFORGE_*`, `NEXT_PUBLIC_APP_URL`, `YOUCAM_API_*`, `STRIPE_*` (gitignored; see `.env.example`). |
 | `.cursor/rules/update-agents-md.mdc` | Always-on rule: keep this briefing updated. |
 
-## Current state (2026-10-24)
+## Current state (2026-11-03)
 
 - **Landing UI:** Mockup-style marketing page at `/` composed from `components/landing/*` (`LandingPage` server-fetches session for header; hero + interactive before/after showcase, feature strip, studio highlights, smart closet grid, blog teaser, testimonials, pricing CTA, footer).
 - **Brand:** Display name **Get Ready AI** (`lib/landing.ts`); Playfair headings, teal/gold CTAs, Unsplash hero/showcase images.
@@ -166,6 +170,7 @@ Keep this section current at the end of every session. Treat it as the index of 
 - **2026-10-24:** Implemented **My Projects** (`/studio/projects`) — unified gallery from `beauty_generations`, `fashion_generations`, and `extras_generations` with card UI, tool/category icons, and paginated history (20 per page).
 - **2026-10-24:** InsForge Stripe billing — test catalog (Basic/Pro monthly prices), migration `20261024163300_billing-subscriptions.sql`, `/studio/billing` UI, server actions for Checkout + Portal, webhook credit grants (25 free signup).
 - **2026-10-24:** Fixed Indian Stripe checkout — replaced USD Prices with INR recurring Prices via InsForge CLI; updated `STRIPE_PRICE_ID_*` and billing plan labels (archived old USD prices).
+- **2026-11-03:** Fixed Netlify secrets scanning — removed committed YouCam key from `.cursor/mcp.json` (gitignore + example), split Stripe env reads to `lib/billing-stripe-server.ts`, committed `.env.example` without literal `STRIPE_PAYMENT_ENV`, added `netlify.toml` `SECRETS_SCAN_OMIT_KEYS` for Stripe mode/price IDs.
 - **2026-11-03:** Fixed production auth redirect to localhost — `resolveAppUrl()` derives HTTPS origin from request on Netlify when `NEXT_PUBLIC_APP_URL` is localhost; added `stylesync-ab.netlify.app` to InsForge `allowed_redirect_urls`.
 <!-- PROJECT-BRIEFING:END -->
 

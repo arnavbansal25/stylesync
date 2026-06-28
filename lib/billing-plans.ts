@@ -1,5 +1,3 @@
-export type StripePaymentEnvironment = "test" | "live"
-
 export type PaidBillingPlanId = "basic" | "pro"
 export type BillingPlanId = "free" | PaidBillingPlanId
 
@@ -67,22 +65,6 @@ export function getBillingPlan(id: BillingPlanId): BillingPlanDefinition {
     return BILLING_PLANS[0]
   }
   return plan
-}
-
-export function getStripePaymentEnvironment(): StripePaymentEnvironment {
-  const env = process.env.STRIPE_PAYMENT_ENV ?? "test"
-  if (env === "live") return "live"
-  return "test"
-}
-
-export function getStripePriceIdForPlan(plan: PaidBillingPlanId): string | null {
-  if (plan === "basic") {
-    return process.env.STRIPE_PRICE_ID_BASIC?.trim() || null
-  }
-  if (plan === "pro") {
-    return process.env.STRIPE_PRICE_ID_PRO?.trim() || null
-  }
-  return null
 }
 
 export function formatBillingPlanLabel(plan: BillingPlanId): string {
