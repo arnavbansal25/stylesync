@@ -114,7 +114,7 @@ Keep this section current at the end of every session. Treat it as the index of 
 | `lib/dashboard-session.ts` | Server helper: auth user + `public.users` profile for dashboard UI. |
 | `app/api/auth/refresh/route.ts` | InsForge SSR session refresh (`createRefreshAuthRouter`). |
 | `app/api/auth/callback/route.ts` | OAuth callback; exchanges `insforge_code` for cookies. |
-| `lib/auth/get-app-url.ts` | `getAppUrl()` from env; `resolveAppUrl()` server helper uses request host when env is localhost (deployed OAuth/Stripe). |
+| `lib/auth/get-app-url.ts` | `getAppUrl()`, `getCanonicalAppUrl()`, `getOAuthCallbackUrl()`; branch-deploy auth redirects via `proxy.ts`. |
 | `app/actions/auth.ts` | Server Actions: sign-in, sign-up, verify email, OAuth start, sign-out. |
 | `components/auth/` | Auth shell, forms, OAuth button, header auth state. |
 | `lib/insforge/client.ts` | `createBrowserClient()` for client session reads. |
@@ -170,7 +170,8 @@ Keep this section current at the end of every session. Treat it as the index of 
 - **2026-10-24:** Implemented **My Projects** (`/studio/projects`) — unified gallery from `beauty_generations`, `fashion_generations`, and `extras_generations` with card UI, tool/category icons, and paginated history (20 per page).
 - **2026-10-24:** InsForge Stripe billing — test catalog (Basic/Pro monthly prices), migration `20261024163300_billing-subscriptions.sql`, `/studio/billing` UI, server actions for Checkout + Portal, webhook credit grants (25 free signup).
 - **2026-10-24:** Fixed Indian Stripe checkout — replaced USD Prices with INR recurring Prices via InsForge CLI; updated `STRIPE_PRICE_ID_*` and billing plan labels (archived old USD prices).
-- **2026-11-03:** Fixed Netlify secrets scanning — removed committed YouCam key from `.cursor/mcp.json` (gitignore + example), split Stripe env reads to `lib/billing-stripe-server.ts`, committed `.env.example` without literal `STRIPE_PAYMENT_ENV`, added `netlify.toml` `SECRETS_SCAN_OMIT_KEYS` for Stripe mode/price IDs.
+- **2026-11-03:** Fixed OAuth on Netlify branch deploys — `master--*.netlify.app` auth requests redirect to `NEXT_PUBLIC_APP_URL`; stray `insforge_code` on `/` redirects to `/api/auth/callback`; OAuth `redirectTo` always uses canonical callback URL.
+- **2026-11-03:** Fixed Netlify secrets scanning — untrack `.cursor/mcp.json`, `netlify.toml` omit keys, server-only Stripe env module.
 - **2026-11-03:** Fixed production auth redirect to localhost — `resolveAppUrl()` derives HTTPS origin from request on Netlify when `NEXT_PUBLIC_APP_URL` is localhost; added `stylesync-ab.netlify.app` to InsForge `allowed_redirect_urls`.
 <!-- PROJECT-BRIEFING:END -->
 

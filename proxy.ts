@@ -1,7 +1,21 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { updateSession } from "@insforge/sdk/ssr/middleware"
+import {
+  canonicalAuthRedirectTarget,
+  oauthCallbackRedirectTarget,
+} from "@/lib/auth/get-app-url"
 
 export async function proxy(request: NextRequest) {
+  const branchAuthRedirect = canonicalAuthRedirectTarget(request)
+  if (branchAuthRedirect) {
+    return NextResponse.redirect(branchAuthRedirect, 307)
+  }
+
+  const oauthCallbackRedirect = oauthCallbackRedirectTarget(request)
+  if (oauthCallbackRedirect) {
+    return NextResponse.redirect(oauthCallbackRedirect, 307)
+  }
+
   const response = NextResponse.next({ request })
 
   await updateSession({
