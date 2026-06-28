@@ -3,6 +3,9 @@ allowed_redirect_urls = [
   "http://localhost:3000/sign-in",
   "http://localhost:3000/sign-up",
   "http://localhost:3000/api/auth/callback",
+  "https://stylesync-ab.netlify.app/sign-in",
+  "https://stylesync-ab.netlify.app/sign-up",
+  "https://stylesync-ab.netlify.app/api/auth/callback",
 ]
 require_email_verification = true
 verify_email_method = "code"

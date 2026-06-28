@@ -1,15 +1,28 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useRef, useState, type PointerEvent } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 type BeforeAfterSliderProps = {
-  src: string
   alt: string
+  className?: string
+  /** Same image on both sides (landing demos); use with before/after class filters. */
+  src?: string
   beforeClassName?: string
   afterClassName?: string
-  className?: string
+  /** Distinct before/after URLs (e.g. studio result compare). */
+  beforeSrc?: string
+  afterSrc?: string
+  objectFit?: "cover" | "contain"
+}
+
+function imageNeedsUnoptimized(src: string) {
+  return (
+    src.startsWith("blob:") ||
+    src.startsWith("http") ||
+    src.startsWith("/api/")
+  )
 }
 
 export function BeforeAfterSlider({
@@ -17,9 +30,16 @@ export function BeforeAfterSlider({
   alt,
   beforeClassName,
   afterClassName,
+  beforeSrc: beforeSrcProp,
+  afterSrc: afterSrcProp,
+  objectFit = "cover",
   className,
 }: BeforeAfterSliderProps) {
-  const [position, setPosition] = useState(52)
+  const beforeSrc = beforeSrcProp ?? src
+  const afterSrc = afterSrcProp ?? src
+  const fitClass = objectFit === "contain" ? "object-contain" : "object-cover"
+  /** Divider position: left of line = before, right = after. */
+  const [position, setPosition] = useState(50)
   const dragging = useRef(false)
   const frame = useRef<HTMLDivElement>(null)
 
@@ -31,42 +51,70 @@ export function BeforeAfterSlider({
     setPosition(Math.min(96, Math.max(4, next)))
   }, [])
 
+  const onPointerDown = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      dragging.current = true
+      event.currentTarget.setPointerCapture(event.pointerId)
+      moveTo(event.clientX)
+    },
+    [moveTo]
+  )
+
+  const onPointerMove = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      if (!dragging.current) return
+      event.preventDefault()
+      moveTo(event.clientX)
+    },
+    [moveTo]
+  )
+
+  const endDrag = useCallback((event: PointerEvent<HTMLDivElement>) => {
+    dragging.current = false
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }, [])
+
+  const imageClass = cn(
+    fitClass,
+    "pointer-events-none select-none [-webkit-user-drag:none]"
+  )
+
+  if (!beforeSrc || !afterSrc) {
+    return null
+  }
+
   return (
     <div
       ref={frame}
-      className={cn("relative h-full w-full cursor-ew-resize overflow-hidden", className)}
-      onPointerDown={(event) => {
-        dragging.current = true
-        event.currentTarget.setPointerCapture(event.pointerId)
-        moveTo(event.clientX)
-      }}
-      onPointerMove={(event) => {
-        if (dragging.current) moveTo(event.clientX)
-      }}
-      onPointerUp={() => {
-        dragging.current = false
-      }}
-      onPointerCancel={() => {
-        dragging.current = false
-      }}
+      className={cn(
+        "relative h-full w-full overflow-hidden select-none touch-none",
+        className
+      )}
     >
       <Image
-        src={src}
+        src={beforeSrc}
         alt={`Before — ${alt}`}
         fill
-        sizes="(max-width: 768px) 80vw, 220px"
-        className={cn("object-cover", beforeClassName)}
+        draggable={false}
+        sizes="(max-width: 768px) 100vw, 50vw"
+        className={cn(imageClass, beforeClassName)}
+        unoptimized={imageNeedsUnoptimized(beforeSrc)}
       />
       <div
-        className="absolute inset-0 overflow-hidden"
-        style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+        style={{ clipPath: `inset(0 0 0 ${position}%)` }}
       >
         <Image
-          src={src}
+          src={afterSrc}
           alt={`After — ${alt}`}
           fill
-          sizes="(max-width: 768px) 80vw, 220px"
-          className={cn("object-cover", afterClassName)}
+          draggable={false}
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className={cn(imageClass, afterClassName)}
+          unoptimized={imageNeedsUnoptimized(afterSrc)}
         />
       </div>
 
@@ -76,6 +124,18 @@ export function BeforeAfterSlider({
       <span className="pointer-events-none absolute top-3 right-3 text-[10px] font-semibold tracking-[0.18em] text-white uppercase drop-shadow">
         After
       </span>
+
+      <div
+        aria-hidden
+        className="absolute inset-0 z-20 cursor-ew-resize touch-none"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onLostPointerCapture={() => {
+          dragging.current = false
+        }}
+      />
 
       <div
         className="pointer-events-none absolute inset-y-0 z-10 flex w-8 -translate-x-1/2 flex-col items-center"

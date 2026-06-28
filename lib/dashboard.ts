@@ -10,6 +10,8 @@ import {
   Shirt,
   Wand2,
 } from "lucide-react"
+import type { BillingPlanId } from "@/lib/billing-plans"
+import { STUDIO_GENERATION_CREDIT_COST } from "@/lib/studio-generation-cost"
 
 export type DashboardNavItem = {
   href: string
@@ -17,8 +19,12 @@ export type DashboardNavItem = {
   icon: LucideIcon
 }
 
-/** Placeholder until billing / credits are stored in the database. */
-export const DEFAULT_REMAINING_CREDITS = 50
+/** Free credits assigned on sign-up (see `public.users.credits`). */
+export const DEFAULT_REMAINING_CREDITS = 25
+
+export const BEAUTY_GENERATION_CREDIT_COST = STUDIO_GENERATION_CREDIT_COST
+
+export const FASHION_GENERATION_CREDIT_COST = STUDIO_GENERATION_CREDIT_COST
 
 export const dashboardNavItems: DashboardNavItem[] = [
   { href: "/studio", label: "Overview", icon: LayoutDashboard },
@@ -106,6 +112,10 @@ export type DashboardUser = {
   name: string | null
   avatarUrl: string | null
   remainingCredits: number
+  billingPlan: BillingPlanId
+  subscriptionStatus: string | null
+  subscriptionPeriodEnd: string | null
+  subscriptionCancelAt: string | null
 }
 
 export function displayName(user: Pick<DashboardUser, "name" | "email">) {

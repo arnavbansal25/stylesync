@@ -1,10 +1,5 @@
-import { StudioSectionPage } from "@/components/dashboard/studio-section-page"
+import { BeautyStudioWorkspace } from "@/components/dashboard/beauty/beauty-studio-workspace"
 
 export default function BeautyPage() {
-  return (
-    <StudioSectionPage
-      title="Beauty"
-      description="Virtual makeup, glow, and beauty enhancements powered by AI."
-    />
-  )
+  return <BeautyStudioWorkspace />
 }

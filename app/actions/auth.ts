@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { createAuthActions } from "@insforge/sdk/ssr"
-import { getAppUrl } from "@/lib/auth/get-app-url"
+import { resolveAppUrl } from "@/lib/auth/get-app-url"
 
 export type AuthActionResult = {
   ok: boolean
@@ -46,11 +46,12 @@ export async function signUpWithEmail(
   name: string
 ): Promise<AuthActionResult> {
   const auth = createAuthActions({ cookies: await cookies() })
+  const appUrl = await resolveAppUrl()
   const { data, error } = await auth.signUp({
     email,
     password,
     name,
-    redirectTo: `${getAppUrl()}/sign-in`,
+    redirectTo: `${appUrl}/sign-in`,
   })
 
   if (error) {
@@ -105,8 +106,9 @@ export async function signOutAction() {
 export async function initiateOAuth(provider: "google" | "github") {
   const cookieStore = await cookies()
   const auth = createAuthActions({ cookies: cookieStore })
+  const appUrl = await resolveAppUrl()
   const { data, error } = await auth.signInWithOAuth(provider, {
-    redirectTo: `${getAppUrl()}/api/auth/callback`,
+    redirectTo: `${appUrl}/api/auth/callback`,
     skipBrowserRedirect: true,
     additionalParams: { prompt: "select_account" },
   })

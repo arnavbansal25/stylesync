@@ -8,6 +8,21 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.perfectcorp.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "bcw-media.s3.ap-northeast-1.amazonaws.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cc8aen5z.us-east.insforge.app",
+        pathname: "/**",
+      },
     ],
   },
   experimental: {

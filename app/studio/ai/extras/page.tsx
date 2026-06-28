@@ -1,10 +1,5 @@
-import { StudioSectionPage } from "@/components/dashboard/studio-section-page"
+import { ExtrasStudioWorkspace } from "@/components/dashboard/extras/extras-studio-workspace"
 
 export default function AiExtrasPage() {
-  return (
-    <StudioSectionPage
-      title="AI Extras"
-      description="Background swaps, accessories, and other creative AI utilities."
-    />
-  )
+  return <ExtrasStudioWorkspace />
 }
